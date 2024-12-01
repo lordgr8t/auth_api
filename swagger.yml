@@ -1,0 +1,282 @@
+openapi: 3.0.0
+info:
+  title: User API
+  version: 1.0.0
+  description: API для управления пользователями
+servers:
+  - url: https://cl93674.tw1.ru/api/v1/
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+security:
+  - ApiKeyAuth: []  # Применение API ключа ко всем запросам
+paths:
+  /user.php:
+    get:
+      summary: Получить пользователя по ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный ответ с данными пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  phone:
+                    type: string
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "ID is required"
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Forbidden"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Connection failed"
+                    
+    post:
+      summary: Создать нового пользователя
+      description: Позволяет создать нового пользователя в системе.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: "John"
+                  description: "Имя пользователя"
+                second_name:
+                  type: string
+                  example: "Doe"
+                  description: "Фамилия пользователя"
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                  description: "Email пользователя"
+                password:
+                  type: string
+                  example: "securepassword"
+                  description: "Пароль пользователя"
+              required:
+                - first_name
+                - second_name
+                - email
+                - password
+
+      responses:
+        '200':
+          description: Успешное создание пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User is added"
+                  id:
+                    type: integer
+                    example: 123
+        '400':
+          description: Ошибка при создании пользователя из-за отсутствующих данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Missing something"
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Something go wrong"
+                  id:
+                    type: integer
+                    example: 123
+    put:
+      summary: Обновить информацию о пользователе
+      description: Позволяет обновить информацию о существующем пользователе на основе его ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: Уникальный идентификатор пользователя (обязательный)
+                first_name:
+                  type: string
+                  description: Имя пользователя (необязательное)
+                second_name:
+                  type: string
+                  description: Фамилия пользователя (необязательное)
+                email:
+                  type: string
+                  format: email
+                  description: Электронная почта пользователя (необязательное)
+                password:
+                  type: string
+                  description: Пароль пользователя (необязательное)
+              required:
+                - id
+      responses:
+        '200':
+          description: Информация о пользователе успешно обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Статус выполнения запроса
+                  message:
+                    type: string
+                    description: Сообщение о результате обновления
+        '400':
+          description: Ошибка валидации входных данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение о том, что пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение о внутренней ошибке сервера
+                    
+    delete:
+      summary: Удаление пользователя
+      description: Удаляет пользователя по указанному ID.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID пользователя, которого необходимо удалить.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное удаление пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User deleted successfully
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+        '400':
+          description: Ошибка в запросе
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Missing user ID
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+
+# components:
+#   schemas:
+#     User:
+#       type: object
+#       required:
+#         - id
+#         - name
+#         - email
+#         - phone
+#       properties:
+#         id:
+#           type: integer
+#         name:
+#           type: string
+#         email:
+#           type: string
+#         phone:
+#           type: string
