@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^api/v1/user/([0-9]+)$ api/v1/user.php?id=$1 [L,QSA]
